@@ -2,6 +2,20 @@ open Lwt.Infix
 
 let sessions : (string * Dialogue.session) list ref = ref []
 let shared_clues : string list ref = ref []
+let history : Yojson.Basic.t list ref = ref []
+let ending : string option ref = ref None
+
+let record_history speaker prompt text =
+  history := !history @ [ `Assoc [ "speaker", `String speaker;
+    "prompt", `String prompt; "text", `String text ] ]
+
+let add_clue clue =
+  if List.mem clue !shared_clues then false
+  else (
+    shared_clues := !shared_clues @ [ clue ];
+    sessions := List.map (fun (id, state) ->
+      (id, Dialogue.add_clues state !shared_clues)) !sessions;
+    true)
 
 let hex_value = function
   | '0' .. '9' as c -> Char.code c - Char.code '0'
@@ -58,29 +72,15 @@ let share_new_clues session =
   sessions :=
     List.map (fun (id, state) -> (id, Dialogue.add_clues state !shared_clues)) !sessions
 
-type room = { id : string; name : string; description : string; row : int; col : int }
-
-let rooms =
-  [
-    { id = "study"; name = "Study"; description = "A quiet study, disturbed in the night."; row = 1; col = 1 };
-    { id = "hall"; name = "Hall"; description = "The hall connects the estate's main rooms."; row = 1; col = 3 };
-    { id = "lounge"; name = "Lounge"; description = "A lounge with a fire gone cold."; row = 1; col = 5 };
-    { id = "library"; name = "Library"; description = "Books and papers line the library walls."; row = 3; col = 1 };
-    { id = "billiard"; name = "Billiard Room"; description = "A billiard table sits beneath a green-shaded lamp."; row = 3; col = 3 };
-    { id = "dining"; name = "Dining Room"; description = "Dinner was left unfinished in the dining room."; row = 3; col = 5 };
-    { id = "conservatory"; name = "Conservatory"; description = "Rain taps against the conservatory glass."; row = 5; col = 1 };
-    { id = "ballroom"; name = "Ballroom"; description = "The ballroom is silent beneath its chandeliers."; row = 5; col = 3 };
-    { id = "kitchen"; name = "Kitchen"; description = "The kitchen is dark except for a single lamp."; row = 5; col = 5 };
-  ]
-
-let find_room id = List.find_opt (fun room -> room.id = id) rooms
+let rooms = Case.data.rooms
+let find_room = Case.find_room
 let find_character id = List.find_opt (fun character -> character.Dialogue.id = id) Dialogue.suspects
 
 let json_string value = `String value
 let json_int value = `Int value
 let json_assoc fields = `Assoc fields
 
-let room_json room =
+let room_json (room : Case.room) =
   json_assoc
     [
       ("id", json_string room.id);
@@ -88,6 +88,10 @@ let room_json room =
       ("description", json_string room.description);
       ("row", json_int room.row);
       ("col", json_int room.col);
+      ("objects", `List (List.map (fun (object_ : Case.object_) ->
+        json_assoc [ "id", json_string object_.id; "name", json_string object_.name;
+          "locked", `Bool (not (Case.unlocked !shared_clues object_));
+          "inspected", `Bool (List.mem object_.clue !shared_clues) ]) room.objects));
     ]
 
 let topic_json (topic : Dialogue.topic) =
@@ -112,11 +116,20 @@ let valid_room requested =
   | Some room -> room
   | None -> List.hd rooms
 
-let state_json ?(notice = "") room_id character_id =
+let clue_json (clue : Case.clue) =
+  json_assoc [ "id", json_string clue.id; "title", json_string clue.title;
+    "kind", json_string clue.kind; "source", json_string clue.source;
+    "description", json_string clue.description ]
+
+let state_json ?(notice = "") ?(new_evidence = []) room_id character_id =
   let room = valid_room room_id in
   let selected_character = Option.bind character_id find_character in
   json_assoc
     [
+      ("story", json_assoc [ "title", json_string Case.data.title;
+        "intro", json_string Case.data.intro; "objective", json_string Case.data.objective ]);
+      ("weapons", `List (List.map (fun (weapon : Case.weapon) ->
+        json_assoc [ "id", json_string weapon.id; "name", json_string weapon.name ]) Case.data.weapons));
       ("rooms", `List (List.map room_json rooms));
       ("characters",
        `List
@@ -134,17 +147,21 @@ let state_json ?(notice = "") room_id character_id =
        | None -> `Null
        | Some character -> character_json character));
       ("clues", `List (List.map json_string !shared_clues));
+      ("evidence", `List (List.filter_map Case.find_clue !shared_clues |> List.map clue_json));
+      ("newEvidence", `List (List.map json_string new_evidence));
+      ("history", `List !history);
+      ("ending", match !ending with None -> `Null | Some text -> json_string text);
       ("notice", json_string notice);
     ]
 
-let json_response ?(notice = "") params =
+let json_response ?(notice = "") ?(new_evidence = []) params =
   Yojson.Basic.to_string
-    (state_json ~notice (param "room" params) (param "suspect" params))
+    (state_json ~notice ~new_evidence (param "room" params) (param "suspect" params))
 
 let ask_response params =
-  let suspect_id = param "suspect" params in
+  let new_evidence = ref [] in
   let notice =
-    match (suspect_id, param "topic" params) with
+    match (param "suspect" params, param "topic" params) with
     | Some suspect_id, Some topic_id ->
         (match find_character suspect_id with
         | None -> "Unknown character."
@@ -154,13 +171,47 @@ let ask_response params =
             save_session suspect next_session;
             share_new_clues next_session;
             (match result with
-            | Dialogue.Replied { text; newly_found = Some clue } ->
-                text ^ " New information recorded: " ^ clue
-            | Dialogue.Replied { text; newly_found = None } -> text
+            | Dialogue.Replied { text; newly_found } ->
+                let topic = List.find (fun (t : Dialogue.topic) -> t.id = topic_id) suspect.topics in
+                record_history suspect.name topic.prompt text;
+                new_evidence := Option.to_list newly_found;
+                suspect.name ^ ": " ^ text
             | Dialogue.Locked _ -> "You do not have enough information for that question yet."
             | Dialogue.Already_asked message -> message
             | Dialogue.Unknown_topic -> "That question is unavailable."))
     | _ -> "Select a character and a question first."
+  in
+  json_response ~notice ~new_evidence:!new_evidence params
+
+let inspect_response params =
+  let new_evidence = ref [] in
+  let notice =
+    match Option.bind (param "room" params) find_room, param "object" params with
+    | Some room, Some object_id ->
+        (match Case.find_object room object_id with
+        | None -> "That object is not in this room."
+        | Some object_ when not (Case.unlocked !shared_clues object_) ->
+            "The panel is locked. Investigate the knocking in the hall to find a way in."
+        | Some object_ ->
+            if add_clue object_.clue then (
+              new_evidence := [ object_.clue ];
+              record_history room.name object_.name object_.description);
+            object_.description)
+    | _ -> "Select a room and an object to inspect."
+  in
+  json_response ~notice ~new_evidence:!new_evidence params
+
+let accuse_response params =
+  let notice =
+    match param "accused" params, param "weapon" params, param "location" params with
+    | Some suspect, Some weapon, Some room
+      when Option.is_some (find_character suspect) && Option.is_some (find_room room)
+        && List.exists (fun (w : Case.weapon) -> w.id = weapon) Case.data.weapons ->
+        if Case.correct_accusation ~suspect ~weapon ~room then (
+          ending := Some (Case.string "explanation" Case.data.solution);
+          "Case solved. Your accusation accounts for the suspect, weapon, and room.")
+        else "That combination does not fit the case. Review the physical evidence and witness accounts, then try again."
+    | _ -> "Choose a suspect, a weapon, and a room before making an accusation."
   in
   json_response ~notice params
 
@@ -187,8 +238,12 @@ let route target =
   | "/" | "/index.html" -> (200, "text/html; charset=utf-8", asset "index.html")
   | "/style.css" -> (200, "text/css; charset=utf-8", asset "style.css")
   | "/app.js" -> (200, "text/javascript; charset=utf-8", asset "app.js")
+  | "/assets/estate-plan.svg" -> (200, "image/svg+xml; charset=utf-8", asset "assets/estate-plan.svg")
+  | "/assets/suspect-portraits.png" -> (200, "image/png", asset "assets/suspect-portraits.png")
   | "/api/state" -> (200, "application/json; charset=utf-8", json_response params)
   | "/api/ask" -> (200, "application/json; charset=utf-8", ask_response params)
+  | "/api/inspect" -> (200, "application/json; charset=utf-8", inspect_response params)
+  | "/api/accuse" -> (200, "application/json; charset=utf-8", accuse_response params)
   | _ ->
       (404, "text/plain; charset=utf-8", "Not found")
 
@@ -249,6 +304,9 @@ let handle_connection fd address =
       Lwt.catch (fun () -> Lwt_io.close output) (fun _ -> Lwt.return_unit))
 
 let serve port =
+  (* A browser may cancel an image request when it navigates away. Let the
+     connection handler catch EPIPE instead of terminating the whole game. *)
+  Sys.set_signal Sys.sigpipe Sys.Signal_ignore;
   let open Lwt_unix in
   let socket = socket PF_INET SOCK_STREAM 0 in
   setsockopt socket SO_REUSEADDR true;
@@ -260,8 +318,18 @@ let serve port =
   Lwt_main.run
     (bind socket (ADDR_INET (Unix.inet_addr_loopback, port)) >>= fun () ->
      listen socket 16;
-     Printf.printf "Dialogue server ready at http://127.0.0.1:%d\n%!" port;
-     open_browser (Printf.sprintf "http://127.0.0.1:%d" port);
+     Printf.printf "Mystery game ready at http://127.0.0.1:%d\n%!" port;
+     if Sys.getenv_opt "NO_BROWSER" <> Some "1" then
+       open_browser (Printf.sprintf "http://127.0.0.1:%d" port);
      accept_loop ())
 
-let () = serve 8080
+let () =
+  let port =
+    match Sys.getenv_opt "PORT" with
+    | None -> 8080
+    | Some value ->
+        (match int_of_string_opt value with
+        | Some port when port > 0 && port < 65536 -> port
+        | _ -> failwith "PORT must be an integer between 1 and 65535")
+  in
+  serve port

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 544" fill="none">
+  <title>Haunted Murder ground floor</title>
+  <desc>An architectural plan of nine furnished rooms connected by narrow straight and winding hallways. Study, hall, and lounge are north; library, billiard room, and dining room are central; conservatory, ballroom, and kitchen are south.</desc>
+  <defs><pattern id="survey-grid" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" stroke="#c4a47a" stroke-opacity=".04" stroke-width=".6"/></pattern></defs>
+  <rect width="960" height="544" fill="#191817"/>
+  <rect width="960" height="544" fill="url(#survey-grid)"/>
+  <!-- Hallways stay outside room interiors and meet the open doorways. -->
+  <defs><path id="hallway-network" d="M191 164V208 M481 164V208 M771 164V208 M191 186C250 170 275 202 330 186S420 170 481 186 M481 186H771 M191 336V380 M481 336V380 M771 336V380 M191 358H481 M481 358C550 342 610 374 675 358S735 346 771 358"/></defs>
+  <g fill="none" stroke-linecap="butt" stroke-linejoin="round">
+    <use href="#hallway-network" stroke="#766b5a" stroke-width="18"/>
+    <use href="#hallway-network" stroke="#302b23" stroke-width="14"/>
+  </g>
+  <rect x="454" y="508" width="52" height="36" fill="#191817"/>
+  <g fill="#201e1b">
+    <rect x="64" y="36" width="248" height="128"/>
+    <rect x="355" y="36" width="250" height="128"/>
+    <rect x="650" y="36" width="246" height="128"/>
+    <rect x="64" y="208" width="248" height="128"/>
+    <rect x="355" y="208" width="250" height="128"/>
+    <rect x="650" y="208" width="246" height="128"/>
+    <rect x="64" y="380" width="248" height="128"/>
+    <rect x="355" y="380" width="250" height="128"/>
+    <rect x="650" y="380" width="246" height="128"/>
+  </g>
+  <g fill="none" stroke="#766b5a" stroke-width="3">
+    <path d="M454 518H54V26H906V518H506"/>
+    <path d="M172 164H64V36H312V164H210"/>
+    <path d="M462 164H355V36H605V164H500"/>
+    <path d="M752 164H650V36H896V164H790"/>
+    <path d="M172 208H64V336H172 M210 336H312V208H210"/>
+    <path d="M462 208H355V336H462 M500 336H605V208H500"/>
+    <path d="M752 208H650V336H752 M790 336H896V208H790"/>
+    <path d="M172 380H64V508H312V380H210"/>
+    <path d="M462 380H355V508H454 M506 508H605V380H500"/>
+    <path d="M752 380H650V508H896V380H790"/>
+  </g>
+  <g stroke="#61594b" stroke-width="1" fill="none">
+    <!-- Study: desk, chair, shelves. -->
+    <rect x="155" y="68" width="76" height="36" rx="2"/><path d="M167 74h26v15h-26M204 76h16v4h-16M184 113h20v13h-20M80 46v65h15V46M80 61h15M80 78h15M80 94h15"/>
+    <!-- Hall: main stair and stair landing. -->
+    <path d="M417 48h126v48H417zM425 48v38h110V48M429 58h102M429 66h102M429 74h102M429 82h102M464 110h32v14h-32"/>
+    <!-- Lounge: sofas and round table. -->
+    <rect x="686" y="61" width="60" height="28" rx="5"/><path d="M691 66h50v16h-50M766 61h55v28h-55zM771 66h45v17h-45"/><circle cx="752" cy="110" r="18"/><path d="M859 53v65h23V53zM865 58v55M871 58v55"/>
+    <!-- Library: shelves, reading table, armchairs. -->
+    <path d="M78 220h150v14H78zM88 220v14M103 220v14M116 220v14M133 220v14M149 220v14M169 220v14M183 220v14M201 220v14M218 220v14M80 244v55h14v-55z"/>
+    <ellipse cx="195" cy="274" rx="34" ry="20"/><path d="M164 301h21v16h-21zM206 301h21v16h-21zM185 262h19v15h-19"/>
+    <!-- Billiard table. -->
+    <rect x="417" y="243" width="128" height="59" rx="5"/><rect x="425" y="250" width="112" height="45" rx="2"/><path d="M412 236l128 4M412 232l128 4"/><circle cx="476" cy="273" r="3"/><circle cx="495" cy="270" r="3"/><circle cx="501" cy="276" r="3"/>
+    <!-- Dining table and six chairs. -->
+    <rect x="713" y="255" width="111" height="37" rx="7"/><path d="M722 244h18v8h-18zM760 244h18v8h-18zM798 244h18v8h-18zM722 296h18v8h-18zM760 296h18v8h-18zM798 296h18v8h-18z"/><circle cx="768" cy="274" r="6"/>
+    <!-- Conservatory: glass panes, planters, bench. -->
+    <path d="M77 392h113M77 392v77M105 392v13M133 392v13M161 392v13M77 418h13M77 444h13M240 410h43v15h-43z"/><circle cx="126" cy="442" r="17"/><path d="M126 425v34M109 442h34M114 430l24 24M138 430l-24 24"/><circle cx="269" cy="450" r="12"/>
+    <!-- Ballroom: parquet outline and chandelier. -->
+    <rect x="416" y="397" width="128" height="64"/><path d="M426 407h108v44H426zM480 407v44M426 429h108"/><circle cx="480" cy="429" r="12"/><circle cx="480" cy="429" r="4"/>
+    <!-- Kitchen: counters, range, workbench. -->
+    <path d="M665 394h215v22H687v50h-22zM702 394v22M744 394v22M790 394v22M834 394v22"/><circle cx="804" cy="401" r="4"/><circle cx="817" cy="401" r="4"/><circle cx="804" cy="410" r="4"/><circle cx="817" cy="410" r="4"/><rect x="742" y="436" width="80" height="22" rx="2"/>
+  </g>
+  <g stroke="#aa9474" stroke-width="2">
+    <!-- Exterior windows. -->
+    <path d="M123 26h76M400 26h65M509 26h65M718 26h87M54 68v55M906 68v55M54 250v50M906 250v50M54 425v50M906 425v50M120 518h80M718 518h87"/>
+  </g>
+</svg>

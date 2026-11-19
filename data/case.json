@@ -1,0 +1,733 @@
+{
+  "title": "The last evening",
+  "intro": "At 9:20 p.m., a scream brings you to the study. Your host, Edmund Ashcroft, is dead. Minutes earlier, lightning plunged the estate into darkness. A fallen oak blocks the road, the telephone is down, and six guests must remain until morning. One of them is lying.",
+  "objective": "Find who killed Ashcroft, which weapon they used, and where the murder happened. Search rooms, compare witness accounts, and follow the evidence behind the house’s supposed haunting.",
+  "rooms": [
+    {
+      "id": "study",
+      "name": "Study",
+      "row": 1,
+      "col": 1,
+      "description": "At 9:20 p.m., you found your host, Edmund Ashcroft, beside his overturned desk. The storm rattles the shutters. A dark stain marks the rug; the body has been covered with a sheet.",
+      "objects": [
+        {
+          "id": "desk",
+          "name": "Search the writing desk",
+          "description": "Beneath a blotter is a letter addressed to Colonel Mustard. A small brass cufflink lies caught in a splinter of the desk.",
+          "clue": "cufflink",
+          "requires": []
+        },
+        {
+          "id": "letter",
+          "name": "Read the unfinished letter",
+          "description": "“Colonel: repay the money taken from the veterans’ fund by morning, or I deliver the ledger to the police.” The letter is signed Edmund Ashcroft.",
+          "clue": "blackmail_letter",
+          "requires": []
+        },
+        {
+          "id": "panel",
+          "name": "Follow the hidden passage",
+          "description": "The passage runs from the conservatory to a panel beside the study fireplace. In its dust, a heavy bootprint has a triangular gap at the heel.",
+          "clue": "passage_tracks",
+          "requires": [
+            "passage_latch"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hall",
+      "name": "Hall",
+      "row": 1,
+      "col": 3,
+      "description": "The front doors are bolted against the storm. Beyond them, a fallen oak blocks the only road. Three soft knocks seem to come from inside an old portrait.",
+      "objects": [
+        {
+          "id": "portrait",
+          "name": "Investigate the knocking portrait",
+          "description": "A loose shutter cord knocks against the wall. Pulling it shifts the portrait and exposes a diagram of a service passage between the conservatory and study. The ghost has a practical explanation.",
+          "clue": "passage_latch",
+          "requires": []
+        },
+        {
+          "id": "clock",
+          "name": "Examine the hall clock",
+          "description": "The clock is running correctly. The guest book beside it records dinner at 8:30 and Ashcroft’s private appointments at 9:00.",
+          "clue": "appointments",
+          "requires": []
+        }
+      ]
+    },
+    {
+      "id": "lounge",
+      "name": "Lounge",
+      "row": 1,
+      "col": 5,
+      "description": "The last embers glow beneath a marble mantel. Miss Scarlet left her glass near the piano when the lights went out.",
+      "objects": [
+        {
+          "id": "revolver",
+          "name": "Inspect the revolver case",
+          "description": "The display revolver is still secured by its intact wax seal. All six chambers are empty, and there is no smell of fired powder.",
+          "clue": "revolver",
+          "requires": []
+        },
+        {
+          "id": "music",
+          "name": "Read the marked sheet music",
+          "description": "A penciled note on the music reads “9:10 — Peacock joins me.” The piano bench holds room for two.",
+          "clue": "piano_note",
+          "requires": []
+        }
+      ]
+    },
+    {
+      "id": "library",
+      "name": "Library",
+      "row": 3,
+      "col": 1,
+      "description": "A lamp illuminates Professor Plum’s research notes. A pocket watch lies open between two heavy books.",
+      "objects": [
+        {
+          "id": "watch",
+          "name": "Examine the pocket watch",
+          "description": "The glass cracked when Plum dropped his watch during the blackout. It stopped at 9:15. From here, the study wall is only a few feet away.",
+          "clue": "stopped_watch",
+          "requires": []
+        },
+        {
+          "id": "ledger",
+          "name": "Read the veterans’ ledger",
+          "description": "The accounts list transfers authorized by Mustard to a private account. Ashcroft has circled the missing funds in red.",
+          "clue": "ledger",
+          "requires": []
+        }
+      ]
+    },
+    {
+      "id": "billiard",
+      "name": "Billiard Room",
+      "row": 3,
+      "col": 3,
+      "description": "An unfinished game waits under a swaying green lamp. A repair kit has been left beside the radiator.",
+      "objects": [
+        {
+          "id": "pipe",
+          "name": "Inspect the lead pipe",
+          "description": "A short lead pipe rests in a repair tray. Both ends are wrapped in undisturbed cobwebs; dust covers its entire length.",
+          "clue": "lead_pipe",
+          "requires": []
+        },
+        {
+          "id": "receipt",
+          "name": "Read the signed receipt",
+          "description": "Mr. Green signed for a loan repayment at 8:45. Ashcroft wrote “paid in full” underneath.",
+          "clue": "receipt",
+          "requires": []
+        }
+      ]
+    },
+    {
+      "id": "dining",
+      "name": "Dining Room",
+      "row": 3,
+      "col": 5,
+      "description": "Six places remain set around the abandoned dinner. One of the two silver candlesticks is missing; the other is still upright.",
+      "objects": [
+        {
+          "id": "candlestick",
+          "name": "Look beneath the sideboard",
+          "description": "Behind the sideboard lies the missing silver candlestick. Its base is dented and bears a dark stain. A violet wool fiber clings to an edge.",
+          "clue": "candlestick",
+          "requires": []
+        },
+        {
+          "id": "place",
+          "name": "Examine Mustard’s place setting",
+          "description": "A regimental jacket hangs on Mustard’s chair. One cufflink is missing, and its violet wool sleeve has a fresh tear. The jacket itself stays where you found it.",
+          "clue": "torn_sleeve",
+          "requires": []
+        }
+      ]
+    },
+    {
+      "id": "conservatory",
+      "name": "Conservatory",
+      "row": 5,
+      "col": 1,
+      "description": "Rain drums on the glass roof. Mud crosses the tiles toward a bookcase that seems oddly shallow.",
+      "objects": [
+        {
+          "id": "rope",
+          "name": "Inspect the garden rope",
+          "description": "The coiled rope is wet with rain and green with plant sap. The loop around a hanging planter is still tied tightly.",
+          "clue": "rope",
+          "requires": []
+        },
+        {
+          "id": "boots",
+          "name": "Examine the muddy boots",
+          "description": "A pair of boots marked “C. Mustard” stands by the door. A triangular piece is missing from the left heel.",
+          "clue": "boots",
+          "requires": []
+        }
+      ]
+    },
+    {
+      "id": "ballroom",
+      "name": "Ballroom",
+      "row": 5,
+      "col": 3,
+      "description": "Chandeliers tremble whenever thunder rolls. A toolbox sits beside the mechanism of a silent mechanical organ.",
+      "objects": [
+        {
+          "id": "wrench",
+          "name": "Inspect the wrench",
+          "description": "The wrench fits the organ’s loose crank. It is covered in sticky oil, but the pale dust on its handle shows no recent grip.",
+          "clue": "wrench",
+          "requires": []
+        },
+        {
+          "id": "programme",
+          "name": "Read the evening programme",
+          "description": "Ashcroft invited everyone to hear a new recording at 9:30. A handwritten addition says he intended to make “an announcement about the fund.”",
+          "clue": "announcement",
+          "requires": []
+        }
+      ]
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "row": 5,
+      "col": 5,
+      "description": "Mrs. White’s kettle is still warm. A knife rack and a tray of unserved desserts sit beneath a single lamp.",
+      "objects": [
+        {
+          "id": "dagger",
+          "name": "Inspect the dagger",
+          "description": "The decorative dagger used to cut the cake is sticky with raspberry glaze. Mrs. White’s recipe card calls for exactly that filling.",
+          "clue": "dagger",
+          "requires": []
+        },
+        {
+          "id": "tray",
+          "name": "Examine the tea tray",
+          "description": "A tea order in Mrs. White’s hand reads “9:12 — Green helping with kettle.” Two used cups stand beside it.",
+          "clue": "tea_order",
+          "requires": []
+        }
+      ]
+    }
+  ],
+  "clues": [
+    {
+      "id": "cufflink",
+      "title": "Regimental cufflink",
+      "kind": "Trace",
+      "source": "Study · writing desk",
+      "description": "A brass cufflink bearing Colonel Mustard’s regimental crest was caught in the freshly splintered desk."
+    },
+    {
+      "id": "blackmail_letter",
+      "title": "Ashcroft’s ultimatum",
+      "kind": "Document",
+      "source": "Study · unfinished letter",
+      "description": "Ashcroft planned to report Mustard’s theft from the veterans’ fund the following morning."
+    },
+    {
+      "id": "passage_tracks",
+      "title": "A distinctive bootprint",
+      "kind": "Trace",
+      "source": "Study · hidden passage",
+      "description": "A fresh bootprint leads into the study from the conservatory. Its heel has a triangular gap."
+    },
+    {
+      "id": "passage_latch",
+      "title": "The portrait’s secret",
+      "kind": "Discovery",
+      "source": "Hall · portrait",
+      "description": "The knocking comes from a shutter cord. A diagram shows how to open the hidden passage between the conservatory and study."
+    },
+    {
+      "id": "appointments",
+      "title": "Private appointments",
+      "kind": "Document",
+      "source": "Hall · guest book",
+      "description": "Ashcroft arranged to see each guest privately after dinner, beginning at 9:00 p.m."
+    },
+    {
+      "id": "revolver",
+      "title": "Revolver",
+      "kind": "Weapon",
+      "source": "Lounge · display case",
+      "description": "The unloaded revolver remains behind an intact wax seal. There is no evidence that it was fired."
+    },
+    {
+      "id": "piano_note",
+      "title": "A penciled time",
+      "kind": "Document",
+      "source": "Lounge · piano",
+      "description": "Scarlet’s sheet music records Mrs. Peacock joining her at the piano at 9:10. A note alone is not independent proof."
+    },
+    {
+      "id": "stopped_watch",
+      "title": "The stopped watch",
+      "kind": "Timeline",
+      "source": "Library · reading table",
+      "description": "Plum’s watch stopped at 9:15 during the blackout, shortly before Ashcroft was discovered at 9:20."
+    },
+    {
+      "id": "ledger",
+      "title": "The missing funds",
+      "kind": "Document",
+      "source": "Library · accounts ledger",
+      "description": "The veterans’ fund ledger records unexplained transfers authorized by Colonel Mustard."
+    },
+    {
+      "id": "lead_pipe",
+      "title": "Lead pipe",
+      "kind": "Weapon",
+      "source": "Billiard Room · repair tray",
+      "description": "The pipe’s dust and cobwebs are undisturbed, suggesting it has not been handled tonight."
+    },
+    {
+      "id": "receipt",
+      "title": "A settled debt",
+      "kind": "Document",
+      "source": "Billiard Room · side table",
+      "description": "Ashcroft acknowledged Green’s debt as paid in full at 8:45, before the murder."
+    },
+    {
+      "id": "candlestick",
+      "title": "Dented candlestick",
+      "kind": "Weapon",
+      "source": "Dining Room · beneath the sideboard",
+      "description": "A dented candlestick bears a dark stain and a violet wool fiber. Its partner remains on the dinner table."
+    },
+    {
+      "id": "torn_sleeve",
+      "title": "The torn violet sleeve",
+      "kind": "Trace",
+      "source": "Dining Room · Mustard’s chair",
+      "description": "Mustard’s violet wool jacket has a torn sleeve and a missing regimental cufflink."
+    },
+    {
+      "id": "rope",
+      "title": "Rope",
+      "kind": "Weapon",
+      "source": "Conservatory · hanging planter",
+      "description": "The garden rope is still supporting a heavy planter. It is wet and stained with plant sap."
+    },
+    {
+      "id": "boots",
+      "title": "Mustard’s damaged boots",
+      "kind": "Trace",
+      "source": "Conservatory · doorway",
+      "description": "Boots marked C. Mustard have a triangular gap in the left heel."
+    },
+    {
+      "id": "wrench",
+      "title": "Wrench",
+      "kind": "Weapon",
+      "source": "Ballroom · organ toolbox",
+      "description": "The oily wrench has undisturbed dust on its handle. No matching oil marks were visible around the study desk."
+    },
+    {
+      "id": "announcement",
+      "title": "An interrupted announcement",
+      "kind": "Document",
+      "source": "Ballroom · music stand",
+      "description": "Ashcroft planned a public announcement about the veterans’ fund at 9:30."
+    },
+    {
+      "id": "dagger",
+      "title": "Dagger",
+      "kind": "Weapon",
+      "source": "Kitchen · dessert tray",
+      "description": "The dagger bears raspberry glaze from the cake. Its blade and point show no other visible stains."
+    },
+    {
+      "id": "tea_order",
+      "title": "The late tea order",
+      "kind": "Timeline",
+      "source": "Kitchen · tea tray",
+      "description": "White’s written tea order places Green helping in the kitchen at 9:12, shortly before the blackout."
+    },
+    {
+      "id": "scarlet_account",
+      "title": "Scarlet’s account",
+      "kind": "Testimony",
+      "source": "Miss Scarlet",
+      "description": "Scarlet says she and Peacock were at the lounge piano from 9:10 until the body was found."
+    },
+    {
+      "id": "mustard_departure",
+      "title": "Mustard left dinner",
+      "kind": "Testimony",
+      "source": "Miss Scarlet",
+      "description": "Scarlet saw Mustard walk toward the conservatory at about 9:10."
+    },
+    {
+      "id": "mustard_account",
+      "title": "Mustard’s claim",
+      "kind": "Testimony",
+      "source": "Colonel Mustard",
+      "description": "Mustard claims he stayed in the dining room all evening and never entered the study."
+    },
+    {
+      "id": "cufflink_response",
+      "title": "Mustard acknowledges the cufflink",
+      "kind": "Testimony",
+      "source": "Colonel Mustard",
+      "description": "Mustard recognizes the study cufflink as his, but says it was lost on an earlier visit."
+    },
+    {
+      "id": "fund_admission",
+      "title": "The borrowed funds",
+      "kind": "Testimony",
+      "source": "Colonel Mustard",
+      "description": "Mustard admits taking the charity money and being threatened with exposure by morning."
+    },
+    {
+      "id": "passage_admission",
+      "title": "A changed account",
+      "kind": "Testimony",
+      "source": "Colonel Mustard",
+      "description": "Confronted with the matching heel, Mustard admits entering the study through the hidden passage."
+    },
+    {
+      "id": "white_account",
+      "title": "White’s kitchen account",
+      "kind": "Testimony",
+      "source": "Mrs. White",
+      "description": "White says she and Green were in the kitchen together during the blackout."
+    },
+    {
+      "id": "candlestick_timing",
+      "title": "The missing table ornament",
+      "kind": "Testimony",
+      "source": "Mrs. White",
+      "description": "White saw both candlesticks at dinner at 9:05. A candlestick was later hidden under the dining-room sideboard."
+    },
+    {
+      "id": "passage_knowledge",
+      "title": "Who knew the ghost walk",
+      "kind": "Testimony",
+      "source": "Mrs. White",
+      "description": "White says Mustard knew the service passage from earlier private meetings with Ashcroft."
+    },
+    {
+      "id": "green_account",
+      "title": "Green’s kitchen account",
+      "kind": "Testimony",
+      "source": "Mr. Green",
+      "description": "Green independently places himself with White in the kitchen from about 9:10."
+    },
+    {
+      "id": "debt_response",
+      "title": "Green’s settled business",
+      "kind": "Testimony",
+      "source": "Mr. Green",
+      "description": "Green says the receipt settled his debt at 8:45."
+    },
+    {
+      "id": "fresh_tear",
+      "title": "A fresh tear",
+      "kind": "Testimony",
+      "source": "Mr. Green",
+      "description": "Green says Mustard’s violet sleeve was intact on arrival and torn after the scream."
+    },
+    {
+      "id": "peacock_account",
+      "title": "Peacock corroborates Scarlet",
+      "kind": "Testimony",
+      "source": "Mrs. Peacock",
+      "description": "Peacock independently confirms staying with Scarlet at the lounge piano during the blackout."
+    },
+    {
+      "id": "thud",
+      "title": "A thud at the quarter hour",
+      "kind": "Testimony",
+      "source": "Mrs. Peacock",
+      "description": "Peacock heard a heavy thud from the study at approximately 9:15, followed by footsteps toward the dining room."
+    },
+    {
+      "id": "plum_account",
+      "title": "Plum’s account",
+      "kind": "Testimony",
+      "source": "Professor Plum",
+      "description": "Plum says he was alone in the library and heard a heavy impact through the study wall during the blackout."
+    },
+    {
+      "id": "injury",
+      "title": "Plum’s observation of the injury",
+      "kind": "Testimony",
+      "source": "Professor Plum",
+      "description": "Plum reports one broad injury to the back of Ashcroft’s head and no visible puncture or gunshot wound. This is a witness observation, not a medical examination."
+    },
+    {
+      "id": "fiber_comparison",
+      "title": "Violet wool comparison",
+      "kind": "Testimony",
+      "source": "Professor Plum",
+      "description": "Plum observes that the candlestick fiber resembles Mustard’s torn violet wool sleeve."
+    }
+  ],
+  "suspects": [
+    {
+      "id": "scarlet",
+      "name": "Miss Scarlet",
+      "greeting": "Edmund invited us for dinner, then spent the evening threatening people. Ask what you need. I want this over before dawn.",
+      "topics": [
+        {
+          "id": "whereabouts",
+          "prompt": "Where were you during the blackout?",
+          "reply": "I was at the lounge piano from 9:05 until the scream. Mrs. Peacock joined me at 9:10; we stayed together.",
+          "clue": "scarlet_account",
+          "requires": []
+        },
+        {
+          "id": "victim",
+          "prompt": "Why did Ashcroft invite you?",
+          "reply": "I was buying his late wife’s paintings. He raised the price over dinner, and I was furious. That is hardly a reason to kill him.",
+          "clue": null,
+          "requires": []
+        },
+        {
+          "id": "movement",
+          "prompt": "Did anyone leave the dining room?",
+          "reply": "At about 9:10 I saw Mustard leave toward the conservatory. He said he needed air. I did not see him return.",
+          "clue": "mustard_departure",
+          "requires": [
+            "boots"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mustard",
+      "name": "Colonel Mustard",
+      "greeting": "Keep your questions brief. A storm and a dead host are quite enough unpleasantness for one evening.",
+      "topics": [
+        {
+          "id": "whereabouts",
+          "prompt": "Where were you at 9:15?",
+          "reply": "In the dining room, all evening after dinner. I never entered the study tonight.",
+          "clue": "mustard_account",
+          "requires": []
+        },
+        {
+          "id": "victim",
+          "prompt": "What business did you have with Ashcroft?",
+          "reply": "I administered his veterans’ charity. We disagreed about the accounts. A bookkeeping dispute, nothing more.",
+          "clue": null,
+          "requires": []
+        },
+        {
+          "id": "cufflink",
+          "prompt": "Why was your cufflink in the study?",
+          "reply": "That is my crest. I must have lost it on an earlier visit. I certainly did not struggle with Edmund tonight.",
+          "clue": "cufflink_response",
+          "requires": [
+            "cufflink"
+          ]
+        },
+        {
+          "id": "fund",
+          "prompt": "What about the ultimatum and missing funds?",
+          "reply": "I borrowed the money. I meant to replace it. Edmund would not listen; he said he would ruin me by morning.",
+          "clue": "fund_admission",
+          "requires": [
+            "blackmail_letter",
+            "ledger"
+          ]
+        },
+        {
+          "id": "passage",
+          "prompt": "Your boot matches the passage print. Explain.",
+          "reply": "I went through the conservatory passage to speak to him. Yes, I lied about staying at dinner. But entering that room does not prove I killed him.",
+          "clue": "passage_admission",
+          "requires": [
+            "passage_tracks",
+            "boots",
+            "mustard_account"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "white",
+      "name": "Mrs. White",
+      "greeting": "I have kept this house for twenty years. Tonight even the walls sound restless. Still, people do more harm than ghosts.",
+      "topics": [
+        {
+          "id": "whereabouts",
+          "prompt": "Where were you when the lights went out?",
+          "reply": "In the kitchen with Mr. Green. He was helping lift the kettle when the lights failed.",
+          "clue": "white_account",
+          "requires": []
+        },
+        {
+          "id": "victim",
+          "prompt": "How did you get along with Ashcroft?",
+          "reply": "He was selling the estate. I would have lost my job. But he had written me a reference, and I was already packing.",
+          "clue": null,
+          "requires": []
+        },
+        {
+          "id": "candlestick",
+          "prompt": "When did you last see both candlesticks?",
+          "reply": "Both were on the dinner table when I cleared the plates at 9:05. I passed the study at 9:18; through the door I saw only the fallen desk lamp.",
+          "clue": "candlestick_timing",
+          "requires": [
+            "candlestick"
+          ]
+        },
+        {
+          "id": "haunting",
+          "prompt": "Do you know about the hidden passage?",
+          "reply": "The family called it the ghost walk. It connects the conservatory to the study. Mustard used it on earlier visits to discuss the charity privately.",
+          "clue": "passage_knowledge",
+          "requires": [
+            "passage_latch"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "green",
+      "name": "Mr. Green",
+      "greeting": "I know what everyone thinks about my debts. Check the papers before you decide who I am.",
+      "topics": [
+        {
+          "id": "whereabouts",
+          "prompt": "Can anyone confirm your whereabouts?",
+          "reply": "Mrs. White. I helped her in the kitchen from about 9:10 until we heard the scream.",
+          "clue": "green_account",
+          "requires": []
+        },
+        {
+          "id": "debt",
+          "prompt": "Was your debt a reason to threaten Ashcroft?",
+          "reply": "It was paid at 8:45. He signed the receipt himself. I came to dinner owing him nothing.",
+          "clue": "debt_response",
+          "requires": [
+            "receipt"
+          ]
+        },
+        {
+          "id": "jacket",
+          "prompt": "Did you notice Mustard’s jacket?",
+          "reply": "He took it off after the scream. I noticed a rip in that violet sleeve. It was whole when he arrived for dinner.",
+          "clue": "fresh_tear",
+          "requires": [
+            "torn_sleeve"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "peacock",
+      "name": "Mrs. Peacock",
+      "greeting": "Edmund loved a captive audience. Now the storm has made us exactly that. I will tell you what I saw.",
+      "topics": [
+        {
+          "id": "whereabouts",
+          "prompt": "Where did you spend the evening?",
+          "reply": "With Miss Scarlet at the lounge piano after 9:10. When the lights went out, we held hands until they came back.",
+          "clue": "peacock_account",
+          "requires": []
+        },
+        {
+          "id": "victim",
+          "prompt": "Did you have a disagreement with Ashcroft?",
+          "reply": "He threatened to withdraw his donation to my hospital. Cruel, yes. But the hospital could survive without his money.",
+          "clue": null,
+          "requires": []
+        },
+        {
+          "id": "sound",
+          "prompt": "What did you hear during the blackout?",
+          "reply": "One heavy thud from the study, just as the hall clock finished striking the quarter hour. Then footsteps toward the dining room.",
+          "clue": "thud",
+          "requires": [
+            "stopped_watch"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plum",
+      "name": "Professor Plum",
+      "greeting": "I was reading in the library. The dead deserve facts, so let us distinguish observations from rumors.",
+      "topics": [
+        {
+          "id": "whereabouts",
+          "prompt": "What happened during the blackout?",
+          "reply": "I was alone in the library. I dropped my watch when the lights failed. I heard a single heavy impact through the study wall.",
+          "clue": "plum_account",
+          "requires": []
+        },
+        {
+          "id": "victim",
+          "prompt": "Why were you invited here?",
+          "reply": "Ashcroft owned letters I needed for my research. He refused to let me publish them. We argued before dinner, in front of everyone.",
+          "clue": null,
+          "requires": []
+        },
+        {
+          "id": "injury",
+          "prompt": "What did you observe when the body was found?",
+          "reply": "A single broad injury at the back of the head. No visible puncture or gunshot wound. A heavy blunt object would fit what I saw.",
+          "clue": "injury",
+          "requires": [
+            "candlestick"
+          ]
+        },
+        {
+          "id": "fiber",
+          "prompt": "Does this fiber resemble the torn sleeve?",
+          "reply": "The fiber on the candlestick and Mustard’s torn sleeve appear to be the same violet wool. Compare that with the cufflink in the study.",
+          "clue": "fiber_comparison",
+          "requires": [
+            "candlestick",
+            "torn_sleeve"
+          ]
+        }
+      ]
+    }
+  ],
+  "weapons": [
+    {
+      "id": "candlestick",
+      "name": "Candlestick"
+    },
+    {
+      "id": "dagger",
+      "name": "Dagger"
+    },
+    {
+      "id": "lead_pipe",
+      "name": "Lead pipe"
+    },
+    {
+      "id": "revolver",
+      "name": "Revolver"
+    },
+    {
+      "id": "rope",
+      "name": "Rope"
+    },
+    {
+      "id": "wrench",
+      "name": "Wrench"
+    }
+  ],
+  "solution": {
+    "suspect": "mustard",
+    "weapon": "candlestick",
+    "room": "study",
+    "explanation": "Colonel Mustard killed Edmund Ashcroft in the study with the dining-room candlestick at about 9:15. Ashcroft was about to expose his theft from the veterans’ fund. Mustard entered through the conservatory passage, leaving his distinctive bootprint, and lost a cufflink in the struggle. His torn violet sleeve left a fiber on the candlestick. During the blackout he struck Ashcroft, then hid the weapon under the dining-room sideboard and claimed he had never left dinner. The knocking behind the portrait was a loose shutter cord; the house’s ghost story concealed a human route."
+  }
+}

@@ -1,2 +1,9 @@
 (library
- (name dialogue))
+ (name case)
+ (modules case)
+ (libraries yojson))
+
+(library
+ (name dialogue)
+ (modules dialogue)
+ (libraries case yojson))

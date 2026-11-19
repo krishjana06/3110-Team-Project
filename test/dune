@@ -1,0 +1,4 @@
+(test
+ (name case_test)
+ (libraries case dialogue yojson)
+ (deps ../data/case.json))
