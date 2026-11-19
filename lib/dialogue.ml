@@ -34,6 +34,10 @@ let suspects =
             reply = "[Placeholder answer about whereabouts.]"; clue = Some "timeline"; requires = [] };
           { id = "victim"; prompt = "What was your relationship with the victim?";
             reply = "[Placeholder answer about the victim.]"; clue = None; requires = [] };
+          { id = "scarlet_placeholder_1"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
+          { id = "scarlet_placeholder_2"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
         ];
     };
     {
@@ -50,6 +54,10 @@ let suspects =
           { id = "timeline_followup"; prompt = "Can anyone confirm your timeline?";
             reply = "[Placeholder answer that connects the timelines.]"; clue = Some "witness_account";
             requires = [ "timeline" ] };
+          { id = "mustard_placeholder_1"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
+          { id = "mustard_placeholder_2"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
         ];
     };
     {
@@ -67,6 +75,10 @@ let suspects =
           { id = "evidence"; prompt = "Do you recognize this evidence?";
             reply = "[Placeholder reaction to evidence.]"; clue = Some "evidence_link";
             requires = [ "motive" ] };
+          { id = "white_placeholder_1"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
+          { id = "white_placeholder_2"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
         ];
     };
     {
@@ -82,6 +94,10 @@ let suspects =
             reply = "[Placeholder answer about the alibi.]"; clue = None; requires = [] };
           { id = "room_visit"; prompt = "Which rooms did you visit?";
             reply = "[Placeholder answer about the rooms visited.]"; clue = None; requires = [] };
+          { id = "green_placeholder_1"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
+          { id = "green_placeholder_2"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
         ];
     };
     {
@@ -97,6 +113,10 @@ let suspects =
             reply = "[Placeholder recollection of the evening.]"; clue = None; requires = [] };
           { id = "discovery"; prompt = "Did you notice anything unusual?";
             reply = "[Placeholder observation.]"; clue = None; requires = [] };
+          { id = "peacock_placeholder_1"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
+          { id = "peacock_placeholder_2"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
         ];
     };
     {
@@ -112,6 +132,10 @@ let suspects =
             reply = "[Placeholder answer about the visit.]"; clue = None; requires = [] };
           { id = "witness"; prompt = "Did you see anyone leave a room?";
             reply = "[Placeholder answer about a possible witness.]"; clue = None; requires = [] };
+          { id = "plum_placeholder_1"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
+          { id = "plum_placeholder_2"; prompt = "[Placeholder question]";
+            reply = ""; clue = None; requires = [] };
         ];
     };
   ]
