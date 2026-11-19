@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#111214" />
+    <title>The Ashcroft Estate | Murder Mystery</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="masthead">
+        <div>
+          <div class="eyebrow">A country house mystery</div>
+          <h1>The Ashcroft Estate</h1>
+        </div>
+        <div class="case-tag">Case 01 <span aria-hidden="true">·</span> The last evening</div>
+      </header>
+
+      <p id="notice" class="notice" role="status" aria-live="polite" hidden></p>
+
+      <div class="layout">
+        <section class="panel map-panel" aria-labelledby="map-title">
+          <div class="panel-heading">
+            <div>
+              <div class="section-kicker">Floor plan</div>
+              <h2 id="map-title">House map</h2>
+            </div>
+            <span class="map-caption">Select a room to inspect</span>
+          </div>
+          <div id="room-map" class="room-grid" aria-label="Estate room map"></div>
+          <div class="map-legend"><span>Ground floor</span><span>9 rooms <span aria-hidden="true">·</span> 1 estate</span></div>
+        </section>
+
+        <aside class="side-column">
+          <section class="panel roster-panel" aria-labelledby="roster-title">
+            <div class="section-kicker">Persons of interest</div>
+            <h2 id="roster-title">Six characters</h2>
+            <div id="character-list" class="character-list"></div>
+          </section>
+
+          <section class="panel room-panel" aria-labelledby="room-title">
+            <div class="section-kicker">Selected location</div>
+            <h2 id="room-title">Loading room…</h2>
+            <p id="room-description" class="muted"></p>
+            <p class="muted room-placeholder">Room clues and searchable objects can be added here.</p>
+          </section>
+        </aside>
+      </div>
+
+      <section class="panel interview-panel" aria-labelledby="interview-title">
+        <div class="section-kicker">Conversation</div>
+        <h2 id="interview-title">Interview a character</h2>
+        <div id="interview-content" class="muted">Loading character information…</div>
+      </section>
+
+      <section class="panel evidence-panel" aria-labelledby="evidence-title">
+        <h2 id="evidence-title">Evidence collected</h2>
+        <div id="evidence-list" class="muted">No evidence collected yet.</div>
+      </section>
+    </main>
+  </body>
+</html>
