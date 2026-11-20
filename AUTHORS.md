@@ -32,3 +32,12 @@ restructure it around viewport-sized workspace tabs, a persistent suspect shelf,
 a contextual room/interview inspector, status badges, and case-note styling.
 It also helped write DOM integration checks for navigation, evidence retention,
 interview progression, keyboard controls, and accusation inputs.
+
+## Interfaces and automated tests — November 2026
+
+Vikram Davey (vsd24) owns the interface and testing area. Claude (Opus 4.5)
+helped draft `lib/case.mli`, the OCamldoc in `lib/dialogue.mli`, the OUnit2
+suite in `test/case_suite.ml`, and the fixture cases in `test/fixtures/`.
+Expected results were derived from `data/case.json` and the game's rules rather
+than from program output, and the suite was confirmed to fail against
+deliberately broken copies of the case data and of `Case.unlocked`.
