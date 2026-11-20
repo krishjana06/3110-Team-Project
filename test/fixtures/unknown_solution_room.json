@@ -1,0 +1,129 @@
+{
+  "title": "A Small Case",
+  "intro": "A guest is found dead in a very small house.",
+  "objective": "Name the suspect, the weapon, and the room.",
+  "rooms": [
+    {
+      "id": "study",
+      "name": "Study",
+      "description": "A cramped study.",
+      "row": 0,
+      "col": 0,
+      "objects": [
+        {
+          "id": "desk",
+          "name": "Desk",
+          "description": "A letter lies on the desk.",
+          "clue": "letter",
+          "requires": []
+        },
+        {
+          "id": "safe",
+          "name": "Safe",
+          "description": "The letter named the combination.",
+          "clue": "ledger",
+          "requires": [
+            "letter"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hall",
+      "name": "Hall",
+      "description": "A narrow hall.",
+      "row": 0,
+      "col": 1,
+      "objects": [
+        {
+          "id": "coat",
+          "name": "Coat",
+          "description": "A torn coat.",
+          "clue": "fiber",
+          "requires": []
+        }
+      ]
+    }
+  ],
+  "clues": [
+    {
+      "id": "letter",
+      "title": "Letter",
+      "kind": "Physical",
+      "source": "Study",
+      "description": "A threatening letter."
+    },
+    {
+      "id": "ledger",
+      "title": "Ledger",
+      "kind": "Physical",
+      "source": "Study",
+      "description": "A falsified ledger."
+    },
+    {
+      "id": "fiber",
+      "title": "Fiber",
+      "kind": "Physical",
+      "source": "Hall",
+      "description": "A violet fiber."
+    },
+    {
+      "id": "admission",
+      "title": "Admission",
+      "kind": "Testimony",
+      "source": "Ash",
+      "description": "Ash admits to the debt."
+    }
+  ],
+  "weapons": [
+    {
+      "id": "candlestick",
+      "name": "Candlestick"
+    },
+    {
+      "id": "rope",
+      "name": "Rope"
+    }
+  ],
+  "suspects": [
+    {
+      "id": "ash",
+      "name": "Ash",
+      "greeting": "Ask what you like.",
+      "topics": [
+        {
+          "id": "whereabouts",
+          "prompt": "Where were you?",
+          "reply": "In the hall, all evening.",
+          "clue": null,
+          "requires": []
+        },
+        {
+          "id": "ledger",
+          "prompt": "Explain the ledger.",
+          "reply": "I owed him money.",
+          "clue": "admission",
+          "requires": [
+            "ledger"
+          ]
+        },
+        {
+          "id": "coat",
+          "prompt": "Is this your coat?",
+          "reply": "It is. I tore it on the gate.",
+          "clue": null,
+          "requires": [
+            "fiber",
+            "admission"
+          ]
+        }
+      ]
+    }
+  ],
+  "solution": {
+    "suspect": "ash",
+    "weapon": "candlestick",
+    "room": "cellar",
+    "explanation": "Ash struck him in the study with the candlestick."
+  }
+}

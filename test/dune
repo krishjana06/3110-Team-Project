@@ -1,4 +1,13 @@
 (test
  (name case_test)
+ (modules case_test)
  (libraries case dialogue yojson)
  (deps ../data/case.json))
+
+(test
+ (name case_suite)
+ (modules case_suite)
+ (libraries case dialogue ounit2 yojson)
+ (deps
+  ../data/case.json
+  (glob_files fixtures/*.json)))
