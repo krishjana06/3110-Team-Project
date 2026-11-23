@@ -41,3 +41,17 @@ suite in `test/case_suite.ml`, and the fixture cases in `test/fixtures/`.
 Expected results were derived from `data/case.json` and the game's rules rather
 than from program output, and the suite was confirmed to fail against
 deliberately broken copies of the case data and of `Case.unlocked`.
+
+## House exploration — November 22, 2026
+
+Suchit Basineni (ssb278) owns house exploration; Sachin Chhaya (sc3482) is the
+backup owner. Claude (Opus 5.5) helped write the exploration additions:
+hallways, the ghost-walk passage, and haunted events in `data/case.json`; their
+parsing and validation in `lib/case.ml`; the `House` module (`lib/house.mli`,
+`lib/house.ml`); the `/api/move` route and location-checked searching in
+`bin/main.ml`; the plan, exit list, and haunting display in `web/`; the OUnit
+suite `test/house_suite.ml` and its fixtures; and updates to the HTTP and DOM
+integration checks. Expected test results were derived by hand from
+`test/fixtures/house.json` and the movement rules, not from program output, and
+the suite was confirmed to fail against two deliberately broken copies of
+`House`. Review by the backup owner is pending.

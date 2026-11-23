@@ -22,10 +22,16 @@ new artwork routes are available.
 
 - Use **The house**, **Your evidence**, and **Make accusation** to switch
   workspace tabs. The suspect strip stays available above every view.
-- Select a room on the architectural floor plan to open its search inspector.
-  The plan fits the remaining viewport; the inspector scrolls independently.
-  Straight and winding hallways connect the rooms; the brass map-header button
-  opens the accusation form.
+- You start in the study. Select a room on the floor plan, or a button under
+  **Ways out**, to walk there. The north corridor joins the top and middle rows
+  and the south corridor joins the middle and bottom rows, so reaching the
+  bottom row from the top means passing through a middle room. Rooms you
+  cannot reach in one move are marked "No direct way", and the game suggests a
+  route. You can only search the room you are standing in. The brass
+  map-header button opens the accusation form.
+- The house is haunted, or seems to be. Some rooms have events that happen once,
+  the first time you are there with the right evidence, and some of them leave
+  a clue. They are recorded in the journal under "The house".
 - Select a suspect to switch that same inspector to an interview. Use the
   inspector tabs to return to the room without losing your selected suspect.
   Portrait badges distinguish the active interview and previously questioned guests.
@@ -39,7 +45,9 @@ new artwork routes are available.
   evidence collection with a description and source. Filter the collection by
   evidence type, or switch to the investigation journal within **Your evidence**
   to reread full answers.
-- Investigate the knocking in the hall to unlock the hidden passage.
+- Investigate the knocking in the hall to unlock the hidden passage. Once
+  open, the ghost walk joins the study and conservatory directly, appears as a
+  dashed line on the plan, and can be walked in either direction.
 - Submit a suspect, weapon, and room in the accusation form. An incorrect
   accusation allows further investigation; solving the case reveals the explanation.
 
@@ -62,7 +70,12 @@ and accusations are part of the browser game.
   suspects' dialogue, evidence catalogue, weapons, and fixed solution. The
   `solution` field is a spoiler for maintainers.
 - `lib/case.ml`: loads the case and validates duplicate IDs, clue references,
-  and solution references. Object `requires` lists gate searches.
+  and solution references. Object `requires` lists gate searches. The optional
+  `hallways`, `passages`, and `events` sections describe the house's layout,
+  its hidden passage, and its haunted events.
+- `lib/house.ml` / `.mli`: immutable exploration state: where the player is,
+  which rooms they can reach (hallways, plus passages whose clues they hold),
+  rooms visited, passages used, and which haunted events have fired.
 - `lib/dialogue.ml` / `.mli`: immutable interview state machine. Topic `requires`
   lists use the same clue IDs as object discoveries; `clue` records a new
   witness statement when the question is answered.
@@ -83,7 +96,9 @@ Story changes can be made in `data/case.json` without changing OCaml or
 JavaScript. Restart the server to load them. Unknown clue IDs fail with a
 specific error at startup. Keep object and dialogue IDs stable while editing.
 
-The API serves `/api/state`, `/api/ask`, `/api/inspect`, and `/api/accuse`.
+The API serves `/api/state`, `/api/move`, `/api/ask`, `/api/inspect`, and
+`/api/accuse`. The player's location is kept by the server; `/api/inspect`
+refuses objects in any other room.
 Evidence descriptions and interview transcripts are returned in the case state;
 the solution is returned only after a correct accusation.
 

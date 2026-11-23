@@ -1,0 +1,228 @@
+{
+  "title": "A Small Haunted House",
+  "intro": "Four rooms, two hallways, and something in the walls.",
+  "objective": "Name the suspect, the weapon, and the room.",
+  "rooms": [
+    {
+      "id": "foyer",
+      "name": "Foyer",
+      "description": "A small foyer.",
+      "row": 0,
+      "col": 0,
+      "objects": [
+        {
+          "id": "mirror",
+          "name": "Mirror",
+          "description": "Something under the mirror.",
+          "clue": "key",
+          "requires": []
+        }
+      ]
+    },
+    {
+      "id": "parlour",
+      "name": "Parlour",
+      "description": "A small parlour.",
+      "row": 0,
+      "col": 0,
+      "objects": [
+        {
+          "id": "chair",
+          "name": "Chair",
+          "description": "Something under the chair.",
+          "clue": "note",
+          "requires": []
+        }
+      ]
+    },
+    {
+      "id": "cellar",
+      "name": "Cellar",
+      "description": "A small cellar.",
+      "row": 0,
+      "col": 0,
+      "objects": [
+        {
+          "id": "crate",
+          "name": "Crate",
+          "description": "Something under the crate.",
+          "clue": "rope_burn",
+          "requires": []
+        }
+      ]
+    },
+    {
+      "id": "attic",
+      "name": "Attic",
+      "description": "A small attic.",
+      "row": 0,
+      "col": 0,
+      "objects": [
+        {
+          "id": "trunk",
+          "name": "Trunk",
+          "description": "Something under the trunk.",
+          "clue": "diary",
+          "requires": []
+        }
+      ]
+    }
+  ],
+  "hallways": [
+    {
+      "id": "main_hall",
+      "name": "Main hall",
+      "rooms": [
+        "foyer",
+        "parlour"
+      ]
+    },
+    {
+      "id": "back_stairs",
+      "name": "Back stairs",
+      "rooms": [
+        "parlour",
+        "cellar"
+      ]
+    }
+  ],
+  "passages": [
+    {
+      "id": "service_door",
+      "name": "Service door",
+      "between": [
+        "foyer",
+        "parlour"
+      ],
+      "requires": [],
+      "description": "A plain door the staff use."
+    },
+    {
+      "id": "ladder",
+      "name": "Attic ladder",
+      "between": [
+        "foyer",
+        "attic"
+      ],
+      "requires": [
+        "key"
+      ],
+      "description": "A folding ladder behind the mirror."
+    },
+    {
+      "id": "dumbwaiter",
+      "name": "Dumbwaiter",
+      "between": [
+        "cellar",
+        "foyer"
+      ],
+      "requires": [
+        "key"
+      ],
+      "description": "A cramped lift between floors."
+    }
+  ],
+  "events": [
+    {
+      "id": "creak",
+      "room": "foyer",
+      "name": "A creak",
+      "text": "The floor creaks.",
+      "clue": null,
+      "requires": []
+    },
+    {
+      "id": "whisper",
+      "room": "parlour",
+      "name": "A whisper",
+      "text": "Something whispers.",
+      "clue": "chill",
+      "requires": []
+    },
+    {
+      "id": "slam",
+      "room": "parlour",
+      "name": "A slam",
+      "text": "A door slams.",
+      "clue": null,
+      "requires": [
+        "chill"
+      ]
+    },
+    {
+      "id": "groan",
+      "room": "cellar",
+      "name": "A groan",
+      "text": "The pipes groan.",
+      "clue": null,
+      "requires": [
+        "key"
+      ]
+    }
+  ],
+  "clues": [
+    {
+      "id": "key",
+      "title": "Key",
+      "kind": "Physical",
+      "source": "Fixture",
+      "description": "The key."
+    },
+    {
+      "id": "note",
+      "title": "Note",
+      "kind": "Document",
+      "source": "Fixture",
+      "description": "The note."
+    },
+    {
+      "id": "rope_burn",
+      "title": "Rope Burn",
+      "kind": "Trace",
+      "source": "Fixture",
+      "description": "The rope burn."
+    },
+    {
+      "id": "diary",
+      "title": "Diary",
+      "kind": "Document",
+      "source": "Fixture",
+      "description": "The diary."
+    },
+    {
+      "id": "chill",
+      "title": "Chill",
+      "kind": "Discovery",
+      "source": "Fixture",
+      "description": "The chill."
+    }
+  ],
+  "weapons": [
+    {
+      "id": "candlestick",
+      "name": "Candlestick"
+    }
+  ],
+  "suspects": [
+    {
+      "id": "ash",
+      "name": "Ash",
+      "greeting": "Ask what you like.",
+      "topics": [
+        {
+          "id": "whereabouts",
+          "prompt": "Where were you?",
+          "reply": "In the parlour.",
+          "clue": null,
+          "requires": []
+        }
+      ]
+    }
+  ],
+  "solution": {
+    "suspect": "ash",
+    "weapon": "candlestick",
+    "room": "attic",
+    "explanation": "Ash did it in the attic."
+  }
+}

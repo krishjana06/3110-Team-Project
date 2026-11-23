@@ -89,6 +89,22 @@ async function main() {
     assert.equal(document.querySelectorAll(".evidence-card").length, 1);
     assert.match($(".evidence-card h3").textContent, /candlestick/i);
 
+    // Movement: ways out, haunted events on arrival, and refused walks.
+    $("#tab-house").click();
+    assert.ok($("#exit-hall"), "The dining room lists the hall as a way out");
+    assert.match($("#room-dining").className, /selected/, "The plan marks where the player stands");
+    $("#exit-hall").click();
+    await waitFor(() => $("#room-title").textContent === "Hall", "An exit button walks to the hall");
+    assert.equal($("#haunting").hidden, false, "Entering the hall plays the knocking");
+    assert.match($("#haunting").textContent, /Knocking in the walls/);
+    assert.match($("#movement").textContent, /north corridor/);
+    assert.match($("#room-kitchen").className, /is-far/, "The kitchen is not on the hall's corridor");
+    assert.equal(document.querySelector("#exit-kitchen"), null, "and is not offered as a way out");
+    $("#room-kitchen").click();
+    await waitFor(() => /No hallway joins/.test($("#movement").textContent), "A far room explains the way round");
+    assert.equal($("#room-title").textContent, "Hall", "A refused walk leaves the player in place");
+    assert.equal($("#haunting").hidden, true, "The knocking does not repeat");
+
     // A delayed interview must not override a newer navigation choice.
     const originalFetch = window.fetch;
     let release;

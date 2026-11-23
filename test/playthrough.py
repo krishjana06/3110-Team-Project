@@ -11,7 +11,22 @@ def request(path, **params):
         assert response.status == 200
         return json.load(response)
 
+def move(room):
+    return request('/api/move', room=room)
+
+def walk(room):
+    """Walk to [room], going through a middle-row room when no hallway joins
+    the two directly. Returns the state on arrival."""
+    state = move(room)
+    if state['location'] != room:
+        move('billiard')
+        state = move(room)
+    assert state['location'] == room, state['notice']
+    return state
+
 def inspect(room, object_id, **params):
+    if request('/api/state')['location'] != room:
+        walk(room)
     return request('/api/inspect', room=room, object=object_id, **params)
 
 def ask(suspect, topic):
@@ -22,6 +37,17 @@ assert not state['evidence'], 'Restart the server before running this playthroug
 assert len(state['rooms']) == 9 and len(state['characters']) == 6
 assert len(state['weapons']) == 6
 assert 'solution' not in state
+# Movement: the game starts in the study, which opens onto the north corridor.
+assert state['location'] == 'study' and state['selectedRoom']['current']
+assert {r['id'] for r in state['routes']} == {'hall', 'lounge', 'library', 'billiard', 'dining'}
+state = move('kitchen')
+assert state['location'] == 'study' and 'No hallway' in state['notice']
+assert 'Billiard Room' in state['notice'], 'A refused walk suggests a way round'
+state = move('conservatory')
+assert state['location'] == 'study' and 'draft' in state['notice']
+assert 'ghost walk' not in state['notice'].lower(), 'The passage is not named before it is found'
+state = request('/api/inspect', room='hall', object='portrait')
+assert not state['evidence'] and 'Walk to the Hall' in state['notice'], 'Searching needs you in the room'
 state = inspect('study', 'panel')
 assert not state['evidence'] and 'locked' in state['notice']
 state = ask('mustard', 'cufflink')
@@ -40,9 +66,30 @@ state = ask('mustard', 'cufflink')
 assert len(state['evidence']) == 2 and 'already' in state['notice']
 state = inspect('kitchen', 'desk')
 assert len(state['evidence']) == 2, 'An object cannot be inspected from the wrong room'
-inspect('hall', 'portrait')
+state = walk('hall')
+assert [e['id'] for e in state['haunting']] == ['hall_knocking']
+assert state['history'][-1]['speaker'] == 'The house'
+state = move('lounge')
+state = move('hall')
+assert state['haunting'] == [], 'A haunted event happens once'
+state = inspect('hall', 'portrait')
+assert not any(r['passage'] for r in state['routes']), 'The passage is in the study, not the hall'
+state = move('study')
+passage = [r for r in state['routes'] if r['id'] == 'conservatory']
+assert passage and passage[0]['passage'] == 'The ghost walk'
+assert state['passages'][0]['open'] and not state['passages'][0]['used']
 state = inspect('study', 'panel')
 assert 'passage_tracks' in state['clues']
+assert [e['id'] for e in state['haunting']] == ['study_echo'], 'Finding the tracks wakes the study'
+state = move('conservatory')
+assert state['location'] == 'conservatory' and 'stone passage' in state['notice']
+assert state['newEvidence'] == ['cold_draft'] and state['passages'][0]['used']
+journal = len(state['history'])
+state = move('study')
+assert state['location'] == 'study' and 'slip through' in state['notice']
+assert len(state['history']) == journal, 'Only the first trip through the passage is journaled'
+state = move('conservatory')
+assert 'cold_draft' in state['clues'] and state['clues'].count('cold_draft') == 1
 inspect('conservatory', 'boots')
 ask('mustard', 'whereabouts')
 state = ask('mustard', 'passage')
@@ -70,8 +117,8 @@ for suspect, topics in {
         assert not any(word in state['notice'].lower() for word in ('unavailable', 'not have enough', 'placeholder'))
 assert 'fiber_comparison' in state['clues'] and 'thud' in state['clues']
 assert len(state['clues']) == len(set(state['clues']))
-# Nineteen searchable objects and seventeen testimony discoveries.
-assert len(state['evidence']) == 36
+# Nineteen searchable objects, two haunted events, seventeen testimony discoveries.
+assert len(state['evidence']) == 38
 # Invalid and wrong accusations do not reveal the answer or remove evidence.
 count = len(state['evidence'])
 state = request('/api/accuse', accused='unknown', weapon='dagger', location='study')

@@ -53,6 +53,39 @@ type weapon = {
 }
 (** A weapon the player may name in an accusation. *)
 
+type hallway = {
+  id : string;
+  name : string;
+  rooms : string list;
+}
+(** A corridor of the house. Every room in [rooms] opens onto it, so the player
+    can walk from any of them to any other in one move. A room may open onto
+    several hallways; that is how the rows of the house are joined. *)
+
+type passage = {
+  id : string;
+  name : string;
+  between : string * string;
+  requires : string list;
+  description : string;
+}
+(** A hidden route joining the two rooms in [between], usable in either
+    direction once the player holds every clue in [requires]. [description]
+    is shown when the player walks through it. *)
+
+type event = {
+  id : string;
+  room : string;
+  name : string;
+  text : string;
+  clue : string option;
+  requires : string list;
+}
+(** A haunted event. It happens at most once per game, the first time the
+    player is in [room] while holding every clue in [requires]. [text] tells
+    the player what happened, and [clue], when present, is the evidence they
+    take away from it. *)
+
 type t = {
   title : string;
   intro : string;
@@ -60,6 +93,9 @@ type t = {
   rooms : room list;
   clues : clue list;
   weapons : weapon list;
+  hallways : hallway list;
+  passages : passage list;
+  events : event list;
   suspects : Yojson.Basic.t list;
   solution : Yojson.Basic.t;
 }
@@ -67,7 +103,10 @@ type t = {
     {!Dialogue} owns the suspect representation and reads them itself; keeping
     them unparsed here avoids two modules defining the same types. Use
     {!string} to read a field of [solution], whose keys are ["suspect"],
-    ["weapon"], ["room"], and ["explanation"]. *)
+    ["weapon"], ["room"], and ["explanation"].
+
+    [hallways], [passages], and [events] are optional in the file and are
+    empty when it leaves them out. *)
 
 val string : string -> Yojson.Basic.t -> string
 (** [string key json] is the string stored at [key] in [json].
@@ -89,12 +128,15 @@ val validate : t -> unit
     unique, that object identifiers are unique within their room, that every
     clue identifier mentioned by an object or a dialogue topic — whether as the
     clue it yields or as one it requires — names a clue that exists, and that
-    the solution names a suspect, a weapon, and a room that exist.
+    the solution names a suspect, a weapon, and a room that exist. It also
+    checks that hallway, passage, and event identifiers are unique, that every
+    room a hallway, passage, or event names exists, and that every clue a
+    passage or event requires or yields exists.
 
     @raise Failure
       with a message naming the offending identifier, such as
       ["Duplicate clue ID: cufflink"], ["Unknown clue ID: missing_clue"], or
-      ["Unknown solution weapon"]. The check stops at the first problem it
+      ["Unknown solution weapon"], or ["Unknown event room: attic"]. The check stops at the first problem it
       finds, so one call reports one problem. *)
 
 val load : string -> t

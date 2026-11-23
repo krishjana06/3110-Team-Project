@@ -51,6 +51,34 @@ check that they can be *found*, so these are genuinely separate.
 Expected answers were derived from the case file and the rules by hand, not
 taken from program output.
 
+### `test/house_suite.ml`: OUnit2, 27 checks
+
+Exploring the house. `fixtures/house.json` is a correct four-room house drawn so
+each rule shows up in exactly one place (see the comment at the top of the
+suite): two hallways sharing the parlour, an attic reachable only by a
+key-locked ladder, a key-locked dumbwaiter, an always-open service door
+duplicating a hallway, and four events, one of which needs another's clue.
+
+**Movement.** Hallways join every room on them; passages open only with
+their clues and work both ways; a room joined by both a hallway and a passage
+is reported as a hallway walk; and every refused move (already here, unknown
+room, not connected, passage locked) returns the house unchanged.
+
+**Haunted events.** Events fire on arrival, in file order, and an event's clue
+counts immediately, so a chained event fires on the same visit. An event fires
+once, waits in its room until its clue is held, and never fires in another
+room. A passage is reported as new only the first time through.
+
+**Validation.** Ten fixtures, each `house.json` with one fault: repeated
+hallway, passage, or event ids; a hallway, passage, or event naming an absent
+room; a passage or event naming an unknown clue; a passage with three ends. As
+in the case suite, the full error text is checked.
+
+**The shipped house.** Every room is reachable from the study by hallways
+alone (the passage is a shortcut, not the only way to the conservatory), the
+ghost walk opens with the portrait latch, and every event is in a reachable
+room.
+
 ### `test/case_test.ml`
 
 An earlier, narrower set of checks over the written case, kept because it
@@ -64,9 +92,11 @@ check were confirmed against deliberately broken copies of the project:
 | Mutation | Result |
 | --- | --- |
 | Added a clue to `data/case.json` that nothing yields | `every clue in the case can be found` and `the case can be solved starting from nothing` both failed; the other 31 passed |
+| `House.haunt` no longer checks whether an event already fired | `an event fires only once`, `an event waits for its clue`, and `starting-room events wait for haunt` failed; the other 24 house checks passed |
+| `House.passage_open` returns `true` always | `hallways join their rooms`, `a hallway is preferred to a passage`, `refused moves change nothing`, and `the ghost walk opens with the portrait latch` failed; the other 23 passed |
 | Changed `Case.unlocked` to return `true` always | `an object stays locked until every requirement is held` and `the hidden passage stays shut until the portrait is examined` both failed; the other 31 passed |
 
-In both cases exactly the tests that should have failed did, and nothing else
+In every case exactly the tests that should have failed did, and nothing else
 did.
 
 ## Manual and non-OCaml checks
@@ -86,7 +116,9 @@ Then, in another shell:
 GAME_TEST_URL=http://127.0.0.1:8082 python3 test/playthrough.py
 ```
 
-An HTTP playthrough: all 36 evidence entries, all six weapons, locked and
+An HTTP playthrough: movement, refused walks and route hints, the ghost walk
+opening and being walked both ways, each haunted event firing once, all 38
+evidence entries, all six weapons, locked and
 repeated actions, dialogue unlocks, journal entries, the ending, and the SVG
 and PNG asset routes. It consumes the running game's state, so restart the
 server before playing or before running the DOM checks.

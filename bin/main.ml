@@ -4,6 +4,7 @@ let sessions : (string * Dialogue.session) list ref = ref []
 let shared_clues : string list ref = ref []
 let history : Yojson.Basic.t list ref = ref []
 let ending : string option ref = ref None
+let house : House.t ref = ref (House.start Case.data)
 
 let record_history speaker prompt text =
   history := !history @ [ `Assoc [ "speaker", `String speaker;
@@ -72,6 +73,28 @@ let share_new_clues session =
   sessions :=
     List.map (fun (id, state) -> (id, Dialogue.add_clues state !shared_clues)) !sessions
 
+(** [record_events events] writes each haunted event in [events] to the
+    journal and adds any clue it yields. It returns [events] with the clues
+    that were new. [haunt ()] fires whatever is now due in the player's room
+    and records it the same way; call it after anything that gives the player
+    a clue, because an event may be waiting for exactly that clue. *)
+let record_events events =
+  let found =
+    List.filter_map
+      (fun (event : Case.event) ->
+        record_history "The house" event.name event.text;
+        match event.clue with
+        | Some clue when add_clue clue -> Some clue
+        | _ -> None)
+      events
+  in
+  (events, found)
+
+let haunt () =
+  let next, events = House.haunt Case.data ~clues:!shared_clues !house in
+  house := next;
+  record_events events
+
 let rooms = Case.data.rooms
 let find_room = Case.find_room
 let find_character id = List.find_opt (fun character -> character.Dialogue.id = id) Dialogue.suspects
@@ -80,10 +103,47 @@ let json_string value = `String value
 let json_int value = `Int value
 let json_assoc fields = `Assoc fields
 
+let room_name id = match Case.find_room id with Some room -> room.name | None -> id
+
+(** [hallway_between a b] is the name of a hallway joining rooms [a] and [b]. *)
+let hallway_between a b =
+  List.find_map
+    (fun (h : Case.hallway) ->
+      if List.mem a h.rooms && List.mem b h.rooms then Some h.name else None)
+    Case.data.hallways
+
+let current_routes () = House.routes Case.data ~clues:!shared_clues (House.location !house)
+
+let route_json (route : House.route) =
+  json_assoc
+    [
+      ("id", json_string route.room);
+      ("name", json_string (room_name route.room));
+      ("passage", match route.passage with None -> `Null | Some p -> json_string p.name);
+      ("hallway",
+       match hallway_between (House.location !house) route.room with
+       | Some name when route.passage = None -> json_string name
+       | _ -> `Null);
+    ]
+
+let passage_json (passage : Case.passage) =
+  json_assoc
+    [
+      ("id", json_string passage.id);
+      ("name", json_string passage.name);
+      ("between", `List [ json_string (fst passage.between); json_string (snd passage.between) ]);
+      ("open", `Bool (House.passage_open ~clues:!shared_clues passage));
+      ("used", `Bool (List.mem passage.id (House.passages_used !house)));
+    ]
+
 let room_json (room : Case.room) =
+  let here = House.location !house in
   json_assoc
     [
       ("id", json_string room.id);
+      ("current", `Bool (room.id = here));
+      ("visited", `Bool (List.mem room.id (House.visited !house)));
+      ("reachable", `Bool (List.exists (fun (r : House.route) -> r.room = room.id) (current_routes ())));
       ("name", json_string room.name);
       ("description", json_string room.description);
       ("row", json_int room.row);
@@ -111,8 +171,8 @@ let character_json (character : Dialogue.suspect) =
       ("questions", `List questions);
     ]
 
-let valid_room requested =
-  match Option.bind requested find_room with
+let current_room () =
+  match find_room (House.location !house) with
   | Some room -> room
   | None -> List.hd rooms
 
@@ -121,8 +181,11 @@ let clue_json (clue : Case.clue) =
     "kind", json_string clue.kind; "source", json_string clue.source;
     "description", json_string clue.description ]
 
-let state_json ?(notice = "") ?(new_evidence = []) room_id character_id =
-  let room = valid_room room_id in
+let event_json (event : Case.event) =
+  json_assoc [ "id", json_string event.id; "name", json_string event.name; "text", json_string event.text ]
+
+let state_json ?(notice = "") ?(new_evidence = []) ?(haunting = []) character_id =
+  let room = current_room () in
   let selected_character = Option.bind character_id find_character in
   json_assoc
     [
@@ -142,6 +205,10 @@ let state_json ?(notice = "") ?(new_evidence = []) room_id character_id =
                 ])
             Dialogue.suspects));
       ("selectedRoom", room_json room);
+      ("location", json_string room.id);
+      ("routes", `List (List.map route_json (current_routes ())));
+      ("passages", `List (List.map passage_json Case.data.passages));
+      ("haunting", `List (List.map event_json haunting));
       ("selectedCharacter",
        (match selected_character with
        | None -> `Null
@@ -154,9 +221,9 @@ let state_json ?(notice = "") ?(new_evidence = []) room_id character_id =
       ("notice", json_string notice);
     ]
 
-let json_response ?(notice = "") ?(new_evidence = []) params =
+let json_response ?(notice = "") ?(new_evidence = []) ?(haunting = []) params =
   Yojson.Basic.to_string
-    (state_json ~notice ~new_evidence (param "room" params) (param "suspect" params))
+    (state_json ~notice ~new_evidence ~haunting (param "suspect" params))
 
 let ask_response params =
   let new_evidence = ref [] in
@@ -181,13 +248,19 @@ let ask_response params =
             | Dialogue.Unknown_topic -> "That question is unavailable."))
     | _ -> "Select a character and a question first."
   in
-  json_response ~notice ~new_evidence:!new_evidence params
+  let haunting, found = haunt () in
+  json_response ~notice ~new_evidence:(!new_evidence @ found) ~haunting params
 
 let inspect_response params =
   let new_evidence = ref [] in
+  let here = current_room () in
   let notice =
-    match Option.bind (param "room" params) find_room, param "object" params with
-    | Some room, Some object_id ->
+    match param "room" params, param "object" params with
+    | Some requested, Some _ when requested <> here.id ->
+        Printf.sprintf "You are in the %s. Walk to the %s before searching it." here.name
+          (room_name requested)
+    | _, Some object_id ->
+        let room = here in
         (match Case.find_object room object_id with
         | None -> "That object is not in this room."
         | Some object_ when not (Case.unlocked !shared_clues object_) ->
@@ -197,9 +270,79 @@ let inspect_response params =
               new_evidence := [ object_.clue ];
               record_history room.name object_.name object_.description);
             object_.description)
-    | _ -> "Select a room and an object to inspect."
+    | _ -> "Select an object to inspect."
   in
-  json_response ~notice ~new_evidence:!new_evidence params
+  let haunting, found = haunt () in
+  json_response ~notice ~new_evidence:(!new_evidence @ found) ~haunting params
+
+(** [via_rooms destination] names the rooms the player can walk to now from
+    which [destination] is one more step, as an English list such as
+    ["the Library, the Billiard Room, or the Dining Room"]. *)
+let via_rooms destination =
+  let names =
+    current_routes ()
+    |> List.filter (fun (r : House.route) ->
+           List.exists (fun (onward : House.route) -> onward.room = destination)
+             (House.routes Case.data ~clues:!shared_clues r.room))
+    |> List.map (fun (r : House.route) -> "the " ^ room_name r.room)
+  in
+  match List.rev names with
+  | [] -> None
+  | [ only ] -> Some only
+  | last :: rest -> Some (String.concat ", " (List.rev rest) ^ ", or " ^ last)
+
+let move_response params =
+  let haunting = ref [] and new_evidence = ref [] in
+  let notice =
+    match param "room" params with
+    | None -> "Choose a room to walk to."
+    | Some requested -> (
+        let from = House.location !house in
+        let next, result = House.move Case.data ~clues:!shared_clues !house requested in
+        house := next;
+        let blocked reason =
+          match via_rooms requested with
+          | Some via -> Printf.sprintf "%s Try going through %s." reason via
+          | None -> reason
+        in
+        match result with
+        | House.Moved { passage; first_time_through; events } ->
+            let walked =
+              match passage with
+              | Some p ->
+                  (* Only the first trip through a passage is worth a journal entry. *)
+                  if first_time_through then (
+                    record_history p.name ("To the " ^ room_name requested) p.description;
+                    p.description)
+                  else
+                    Printf.sprintf "You slip through %s to the %s."
+                      (String.uncapitalize_ascii p.name) (room_name requested)
+              | None -> (
+                  match hallway_between from requested with
+                  | Some hall ->
+                      Printf.sprintf "You walk the %s to the %s."
+                        (String.lowercase_ascii hall) (room_name requested)
+                  | None -> "You walk to the " ^ room_name requested ^ ".")
+            in
+            (* The walk is journaled before whatever happens on arrival. *)
+            let fired, found = record_events events in
+            haunting := fired;
+            new_evidence := found;
+            walked
+        | House.Already_here -> "You are already in the " ^ room_name requested ^ "."
+        | House.Not_connected ->
+            blocked
+              (Printf.sprintf "No hallway joins the %s to the %s." (room_name from)
+                 (room_name requested))
+        | House.Passage_locked _ ->
+            (* Hint that something is there without naming the passage. *)
+            blocked
+              (Printf.sprintf
+                 "No hallway joins the %s to the %s, though a cold draft seems to come from inside the walls."
+                 (room_name from) (room_name requested))
+        | House.Unknown_room -> "There is no such room.")
+  in
+  json_response ~notice ~new_evidence:!new_evidence ~haunting:!haunting params
 
 let accuse_response params =
   let notice =
@@ -243,6 +386,7 @@ let route target =
   | "/api/state" -> (200, "application/json; charset=utf-8", json_response params)
   | "/api/ask" -> (200, "application/json; charset=utf-8", ask_response params)
   | "/api/inspect" -> (200, "application/json; charset=utf-8", inspect_response params)
+  | "/api/move" -> (200, "application/json; charset=utf-8", move_response params)
   | "/api/accuse" -> (200, "application/json; charset=utf-8", accuse_response params)
   | _ ->
       (404, "text/plain; charset=utf-8", "Not found")

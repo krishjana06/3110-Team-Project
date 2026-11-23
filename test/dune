@@ -11,3 +11,11 @@
  (deps
   ../data/case.json
   (glob_files fixtures/*.json)))
+
+(test
+ (name house_suite)
+ (modules house_suite)
+ (libraries case house ounit2)
+ (deps
+  ../data/case.json
+  (glob_files fixtures/*.json)))

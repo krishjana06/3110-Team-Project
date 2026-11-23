@@ -7,3 +7,8 @@
  (name dialogue)
  (modules dialogue)
  (libraries case yojson))
+
+(library
+ (name house)
+ (modules house)
+ (libraries case))
