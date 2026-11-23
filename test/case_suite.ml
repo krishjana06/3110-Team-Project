@@ -385,6 +385,12 @@ let grants () =
             (t.requires, clue, Printf.sprintf "question %s/%s" s.id t.id))
           t.clue)
       (every_topic ())
+  @ List.filter_map
+      (fun (e : Case.event) ->
+        Option.map
+          (fun clue -> (e.requires, clue, Printf.sprintf "event %s" e.id))
+          e.clue)
+      Case.data.events
 
 (* A clue nobody can find is a dead end in the story: some question or object
    demands it, and the player has no way to satisfy that demand. The loader's
@@ -398,7 +404,7 @@ let test_every_clue_in_the_case_can_be_found _ =
       Case.data.clues
   in
   assert_equal
-    ~msg:"every catalogued clue is yielded by some object or question"
+    ~msg:"every catalogued clue is yielded by some object, question, or event"
     ~printer:string_list_printer []
     (List.map (fun (c : Case.clue) -> c.id) orphans)
 
@@ -442,6 +448,8 @@ let test_every_requirement_can_be_satisfied _ =
     @ List.concat_map
         (fun ((_ : Dialogue.suspect), (t : Dialogue.topic)) -> t.requires)
         (every_topic ())
+    @ List.concat_map (fun (e : Case.event) -> e.requires) Case.data.events
+    @ List.concat_map (fun (p : Case.passage) -> p.requires) Case.data.passages
   in
   let impossible =
     List.filter (fun id -> not (List.mem id obtainable)) demanded

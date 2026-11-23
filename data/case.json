@@ -220,6 +220,82 @@
       ]
     }
   ],
+  "hallways": [
+    {
+      "id": "north_corridor",
+      "name": "North corridor",
+      "rooms": [
+        "study",
+        "hall",
+        "lounge",
+        "library",
+        "billiard",
+        "dining"
+      ]
+    },
+    {
+      "id": "south_corridor",
+      "name": "South corridor",
+      "rooms": [
+        "library",
+        "billiard",
+        "dining",
+        "conservatory",
+        "ballroom",
+        "kitchen"
+      ]
+    }
+  ],
+  "passages": [
+    {
+      "id": "ghost_walk",
+      "name": "The ghost walk",
+      "between": [
+        "study",
+        "conservatory"
+      ],
+      "requires": [
+        "passage_latch"
+      ],
+      "description": "You work the latch the portrait’s diagram showed you. The panel opens onto a narrow stone passage behind the library wall, cold and smelling of rain. Fresh mud runs the whole way between the conservatory bookcase and the study fireplace."
+    }
+  ],
+  "events": [
+    {
+      "id": "hall_knocking",
+      "room": "hall",
+      "name": "Knocking in the walls",
+      "requires": [],
+      "clue": null,
+      "text": "As you step into the hall, every candle leans the same way. Three slow knocks answer your footsteps from behind the old portrait, then stop the moment you turn toward it."
+    },
+    {
+      "id": "library_scrape",
+      "room": "library",
+      "name": "Something inside the wall",
+      "requires": [],
+      "clue": "wall_scrape",
+      "text": "The lamp gutters. From behind the shelves comes a slow scrape, like a boot dragged over stone, moving along the inside of the outer wall toward the study. When the light steadies, the sound is gone."
+    },
+    {
+      "id": "conservatory_draft",
+      "room": "conservatory",
+      "name": "The bookcase breathes",
+      "requires": [],
+      "clue": "cold_draft",
+      "text": "Lightning whitens the glass roof. In the flash the shallow bookcase seems to breathe: a cold draft stirs the ferns beside it and carries the smell of old stone, though every window is shut."
+    },
+    {
+      "id": "study_echo",
+      "room": "study",
+      "name": "Footsteps in the passage",
+      "requires": [
+        "passage_tracks"
+      ],
+      "clue": null,
+      "text": "As you step back from the panel, it swings shut with a soft click. Footsteps seem to retreat down the dark passage, then fade. It is only your own echo, but someone walked that passage tonight in heavier boots than yours."
+    }
+  ],
   "clues": [
     {
       "id": "cufflink",
@@ -353,6 +429,20 @@
       "kind": "Timeline",
       "source": "Kitchen · tea tray",
       "description": "White’s written tea order places Green helping in the kitchen at 9:12, shortly before the blackout."
+    },
+    {
+      "id": "wall_scrape",
+      "title": "Footsteps in the wall",
+      "kind": "Discovery",
+      "source": "Library · haunting",
+      "description": "Something moved inside the library’s outer wall, heading toward the study. There is a hollow space there that the floor plan does not show."
+    },
+    {
+      "id": "cold_draft",
+      "title": "A draft behind the bookcase",
+      "kind": "Trace",
+      "source": "Conservatory · haunting",
+      "description": "Cold air flows from behind the conservatory bookcase, exactly where the muddy trail ends. There is open space behind it."
     },
     {
       "id": "scarlet_account",

@@ -40,10 +40,10 @@
             <div class="map-viewport">
               <div class="plan-canvas">
                 <img class="estate-art" src="/assets/estate-plan.svg" alt="Architectural ground-floor plan of nine rooms, showing furniture, corridors, windows, and doorway openings." fetchpriority="high" />
-                <div id="room-map" class="room-map" role="group" aria-label="Choose a room to search"></div>
+                <div id="room-map" class="room-map" role="group" aria-label="Choose a room to walk to"></div>
               </div>
             </div>
-            <div class="map-footer"><span>Selected room: <strong id="map-current-room">Study</strong></span><span id="search-progress">0 of 9 rooms searched</span></div>
+            <div class="map-footer"><span>You are in: <strong id="map-current-room">Study</strong></span><span id="search-progress">0 of 9 rooms searched</span></div>
           </section>
 
           <aside id="inspector" class="inspector" aria-label="Investigation inspector">
@@ -54,9 +54,13 @@
             <div id="inspector-scroll" class="inspector-scroll">
               <section id="inspector-room" role="tabpanel" aria-labelledby="inspector-room-tab">
                 <h2 id="room-title">Loading room…</h2><p id="room-description" class="room-description"></p>
+                <p id="movement" class="movement" role="status" hidden></p>
+                <div id="haunting" class="haunting" role="status" aria-live="polite" hidden></div>
                 <div class="search-heading"><h3>Objects to inspect</h3><span id="room-search-count"></span></div>
                 <div id="room-objects" class="object-list"></div>
                 <p id="discovery" class="discovery" role="status" hidden></p>
+                <div class="search-heading"><h3>Ways out</h3><span id="room-exit-count"></span></div>
+                <div id="room-exits" class="exit-list"></div>
               </section>
               <section id="inspector-interview" role="tabpanel" aria-labelledby="inspector-interview-tab" hidden>
                 <h2 id="interview-title" class="visually-hidden" tabindex="-1">Suspect interview</h2>

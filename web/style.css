@@ -79,6 +79,22 @@ button:disabled { cursor: default; opacity: .45; }
 .room strong { display: block; font: 400 .8125rem/1.3 Georgia, serif; }
 .room-hint { display: block; color: #a39b8d; font-size: .625rem; line-height: 1.4; margin-top: 3px; }
 .room:focus-visible { outline-offset: -4px; }
+.room.is-far { color: #8a8274; }
+.room.is-far .room-label { background: #1a1917f0; }
+.room.is-far:hover { background: transparent; box-shadow: none; }
+.room.is-reachable .room-hint { color: #c9b28e; }
+.secret-passage { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.secret-passage polyline { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 5 5; stroke-linecap: round; vector-effect: non-scaling-stroke; opacity: .75; }
+.exit-list { display: grid; gap: 8px; margin-bottom: 24px; }
+.exit-button small { color: #a39b8d; }
+.exit-button.is-passage { border-style: dashed; border-color: #c4a47a66; }
+.movement { color: #a39b8d; font-size: .8125rem; line-height: 1.7; margin: 12px 0 0; }
+.haunting { margin: 16px 0 0; padding: 14px 16px; border-left: 2px solid #8fa3a6; background: linear-gradient(90deg, #8fa3a614, transparent); color: #c9d2d0; border-radius: 0 3px 3px 0; }
+.haunting strong { display: block; font: italic 400 .875rem/1.4 Georgia, serif; color: #dfe7e5; margin-bottom: 6px; }
+.haunting p { margin: 0; font-size: .8125rem; line-height: 1.7; }
+.haunting p + strong { margin-top: 12px; }
+@media (prefers-reduced-motion: no-preference) { .haunting:not([hidden]) { animation: haunt-in .9s ease-out; } }
+@keyframes haunt-in { 0% { opacity: 0; filter: blur(2px); } 40% { opacity: .55; } 55% { opacity: .3; } 100% { opacity: 1; filter: none; } }
 .map-footer { display: flex; justify-content: space-between; gap: 16px; font-size: .6875rem; color: #8f8a82; flex-shrink: 0; }
 .map-footer strong { color: #d3bd9e; font-weight: 400; }
 .inspector { min-height: 0; display: flex; flex-direction: column; background: var(--surface); border-radius: 6px; overflow: hidden; }

@@ -51,6 +51,8 @@ function makeIcon(name = "search") {
   const paths = {
     search: "M10.5 3a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15ZM16 16l5 5",
     lock: "M6 10h12v11H6zM8 10V6a4 4 0 0 1 8 0v4M12 14v3",
+    door: "M6 21V3h12v18M3 21h18M14 12h1",
+    passage: "M4 21V8l8-5 8 5v13M9 21v-6a3 3 0 0 1 6 0v6",
     check: "m5 12 4 4L19 6",
     clue: "M4 4h16v16H4zM8 8h8M8 12h5M8 16h7",
     Document: "M6 2h8l5 5v15H6zM14 2v6h5M9 12h7M9 16h7",
@@ -176,6 +178,32 @@ function wireTabs(selector, activate, key) {
   });
 }
 
+function roomHint(room, searched) {
+  if (room.current) return searched === room.objects.length ? "You are here · searched" : "You are here";
+  if (room.reachable) return room.visited ? "Walk here" : "Walk here · unexplored";
+  return "No direct way";
+}
+
+function renderPassages(passages) {
+  roomMap.querySelector(".secret-passage")?.remove();
+  const open = passages.filter((passage) => passage.open && roomViews[passage.between[0]] && roomViews[passage.between[1]]);
+  if (!open.length) return;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.classList.add("secret-passage");
+  svg.setAttribute("viewBox", "0 0 100 100");
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("aria-hidden", "true");
+  for (const passage of open) {
+    // Run the passage just outside the rooms' shared left wall, as on a survey.
+    const [a, b] = passage.between.map((id) => roomViews[id]);
+    const edge = Math.min(a.x, b.x) - 3;
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    line.setAttribute("points", [[a.x, a.y + a.height / 2], [edge, a.y + a.height / 2], [edge, b.y + b.height / 2], [b.x, b.y + b.height / 2]].map((point) => point.join(",")).join(" "));
+    svg.append(line);
+  }
+  roomMap.prepend(svg);
+}
+
 function renderRoomMap(rooms) {
   roomMap.replaceChildren();
   for (const room of rooms) {
@@ -184,24 +212,25 @@ function renderRoomMap(rooms) {
     const button = document.createElement("button");
     button.type = "button";
     button.id = `room-${room.id}`;
-    button.className = `room${room.id === selectedRoom ? " selected" : ""}`;
+    button.className = `room${room.current ? " selected" : room.reachable ? " is-reachable" : " is-far"}`;
     button.style.left = `${view.x}%`;
     button.style.top = `${view.y}%`;
     button.style.width = `${view.width}%`;
     button.style.height = `${view.height}%`;
-    button.setAttribute("aria-pressed", String(room.id === selectedRoom));
-    button.setAttribute("aria-label", `${room.name}, ${searched} of ${room.objects.length} objects searched. Enter room.`);
+    button.setAttribute("aria-pressed", String(room.current));
+    const action = room.current ? "You are here." : room.reachable ? "Walk here." : "Not connected to this room.";
+    button.setAttribute("aria-label", `${room.name}, ${searched} of ${room.objects.length} objects searched. ${action}`);
     const label = document.createElement("span");
     label.className = "room-label";
     const name = document.createElement("strong");
     name.textContent = room.name;
     const hint = document.createElement("span");
     hint.className = "room-hint";
-    hint.textContent = searched === room.objects.length ? "Search complete" : `${room.objects.length - searched} things to inspect`;
+    hint.textContent = roomHint(room, searched);
     label.append(name, hint);
     button.append(label);
     button.addEventListener("click", async () => {
-      const state = await loadState(room.id, selectedCharacter);
+      const state = room.current ? await loadState() : await moveTo(room.id);
       if (!state) return;
       selectInspector("room");
       document.querySelector("#inspector-scroll").scrollTop = 0;
@@ -238,7 +267,7 @@ function renderCharacters(characters) {
     button.addEventListener("click", async () => {
       if (busy) return;
       selectWorkspace("house");
-      const state = await loadState(selectedRoom, character.id);
+      const state = await loadState(character.id);
       if (!state) return;
       selectInspector("interview");
       document.querySelector("#inspector-scroll").scrollTop = 0;
@@ -336,6 +365,38 @@ function renderObjects(room) {
   }
 }
 
+function renderExits(routes) {
+  const list = document.querySelector("#room-exits");
+  list.replaceChildren();
+  document.querySelector("#room-exit-count").textContent = `${routes.length} ${routes.length === 1 ? "way" : "ways"}`;
+  for (const route of routes) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.id = `exit-${route.id}`;
+    button.className = `question object-button exit-button${route.passage ? " is-passage" : ""}`;
+    const label = document.createElement("span");
+    label.textContent = route.name;
+    const via = document.createElement("small");
+    via.textContent = route.passage ? `Through ${route.passage.toLowerCase()}` : route.hallway ? `Along the ${route.hallway.toLowerCase()}` : "Walk";
+    button.append(makeIcon(route.passage ? "passage" : "door"), label, via);
+    button.addEventListener("click", () => moveTo(route.id));
+    list.append(button);
+  }
+}
+
+function renderHaunting(events) {
+  const box = document.querySelector("#haunting");
+  box.replaceChildren();
+  box.hidden = !events.length;
+  for (const event of events) {
+    const title = document.createElement("strong");
+    title.textContent = event.name;
+    const text = document.createElement("p");
+    text.textContent = event.text;
+    box.append(title, text);
+  }
+}
+
 function renderEvidence(evidence, newEvidence = []) {
   evidenceList.replaceChildren();
   evidenceList.className = "evidence-grid";
@@ -429,9 +490,10 @@ function render(state) {
   document.querySelector("#story-title").textContent = state.story.title;
   document.querySelector("#story-intro").textContent = state.story.intro;
   document.querySelector("#story-objective").textContent = state.story.objective;
-  selectedRoom = state.selectedRoom.id;
+  selectedRoom = state.location;
   selectedCharacter = state.selectedCharacter?.id ?? null;
   renderRoomMap(state.rooms);
+  renderPassages(state.passages);
   renderCharacters(state.characters);
   roomTitle.textContent = state.selectedRoom.name;
   roomDescription.textContent = state.selectedRoom.description;
@@ -442,6 +504,8 @@ function render(state) {
   document.querySelector("#interview-progress").textContent = `${interviewed} of ${state.characters.length} interviewed`;
   renderInterview(state.selectedCharacter);
   renderObjects(state.selectedRoom);
+  renderExits(state.routes);
+  renderHaunting(state.haunting);
   renderEvidence(state.evidence, state.newEvidence);
   renderJournal(state.history);
   fillSelect("accused", state.characters);
@@ -480,11 +544,27 @@ async function requestState(path, params, onSuccess) {
   }
 }
 
-function loadState(room = selectedRoom, character = selectedCharacter) {
-  const params = { room };
+function loadState(character = selectedCharacter) {
+  const params = {};
   if (character) params.suspect = character;
   return requestState("/api/state", params, () => {
     document.querySelector("#discovery").hidden = true;
+  });
+}
+
+function moveTo(room) {
+  if (busy) return null;
+  const from = selectedRoom;
+  return requestState("/api/move", { room, suspect: selectedCharacter || "" }, (state) => {
+    const movement = document.querySelector("#movement");
+    movement.textContent = state.notice;
+    movement.hidden = !state.notice;
+    if (state.location !== from) {
+      document.querySelector("#discovery").hidden = true;
+      lastInspectedObject = null;
+    }
+    // A refused walk is explained in the room inspector, so make sure it shows.
+    selectInspector("room");
   });
 }
 
@@ -498,6 +578,7 @@ function inspectObject(object) {
   return requestState("/api/inspect", {
     room: selectedRoom, suspect: selectedCharacter || "", object,
   }, (state) => {
+    document.querySelector("#movement").hidden = true;
     const discovery = document.querySelector("#discovery");
     discovery.textContent = `${state.newEvidence.length ? "Added to evidence collection. " : "Recorded earlier. "}${state.notice}`;
     discovery.hidden = false;
